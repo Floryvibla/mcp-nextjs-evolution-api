@@ -11,11 +11,14 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.25.0",
+    "axios": "^1.18.1",
     "mcp-handler": "^1.0.5",
     "next": "^15.2.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "redis": "^4.7.0",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
