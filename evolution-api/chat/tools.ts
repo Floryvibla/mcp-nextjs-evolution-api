@@ -52,12 +52,29 @@ export const chatRegisterTool = (server: McpServer) => {
     "find_chats",
     {
       title: "find_chats",
-      description: "Fetch all chats from the instance database",
+      description:
+        "Fetch chats from the instance whatsapp with optional filters and pagination",
       inputSchema: z.object({
         instanceName: z
           .string()
           .min(1)
           .describe("The name of the connected instance"),
+        where: z
+          .record(z.any())
+          .optional()
+          .describe(
+            "Optional Prisma-like where clause to filter chats (e.g., { unreadMessages: { gt: 0 } } or { isGroup: true })",
+          ),
+        page: z
+          .number()
+          .optional()
+          .default(1)
+          .describe("Page number for pagination"),
+        limit: z
+          .number()
+          .optional()
+          .default(20)
+          .describe("Number of chats to return per page"),
       }),
     },
     async (args, authInfo) => {
@@ -67,7 +84,15 @@ export const chatRegisterTool = (server: McpServer) => {
         instanceName: args.instanceName,
       } as any);
 
-      const response = await chatService.findChats({}); // Payload vazio traz tudo
+      // Montando o payload com base no que foi enviado.
+      // Se não enviar where, enviamos um objeto vazio que traz tudo.
+      const payload = {
+        where: args.where || {},
+        page: args.page,
+        limit: args.limit,
+      };
+
+      const response = await chatService.findChats(payload);
 
       return {
         content: [{ type: "text", text: JSON.stringify(response) }],
@@ -80,7 +105,7 @@ export const chatRegisterTool = (server: McpServer) => {
     "find_contacts",
     {
       title: "find_contacts",
-      description: "Fetch all contacts from the instance database",
+      description: "Fetch all contacts from the whatsapp",
       inputSchema: z.object({
         instanceName: z
           .string()
